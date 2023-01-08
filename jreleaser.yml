@@ -29,6 +29,7 @@ assemble:
       active: ALWAYS
       formats: [ ZIP ]
       attachPlatform: true
+      exported: false
       fileSets:
         - input: '.'
           output: 'bin'
@@ -38,12 +39,13 @@ assemble:
 
 distributions:
   helloworld:
+    type: BINARY
     executable:
       windowsExtension: exe
     artifacts:
       - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-osx-x86_64.zip'
         platform: 'osx-x86_64'
-      - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-windows-x86_64.zip'
-        platform: 'windows-x86_64'
       - path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-linux-x86_64.zip'
         platform: 'linux-x86_64'
+      #- path: '{{artifactsDir}}/{{distributionName}}-{{projectVersion}}-windows-x86_64.zip'
+      #  platform: 'windows-x86_64'

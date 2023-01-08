@@ -1,0 +1,53 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+      project-version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: 'Build ${{ matrix.os }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          distribution: strawberry
+
+      - name: Install modules
+        run: |
+          cpanm PAR
+          cpanm PAR::Packer
+
+      - name: Build
+        shell: bash
+        run: |
+          pp -o helloworld helloworld.pl
+
+      - name: Assemble
+        uses: jreleaser/release-action@v2
+        with:
+          arguments: assemble
+        env:
+          JRELEASER_PROJECT_VERSION: ${{ inputs.version }}
+          JRELEASER_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          retention-days: 1
+          name: artifacts
+          path: |
+            out/jreleaser/assemble/helloworld/archive/*.zip
